@@ -17,6 +17,9 @@ table "flywayapdev"."customers_customer_feedback" {
     column "Comments" {
       type = varchar(500)
     }
+    column "ClientID" {
+      type = int
+    }
   )
   primaryKey = {
     columns = [

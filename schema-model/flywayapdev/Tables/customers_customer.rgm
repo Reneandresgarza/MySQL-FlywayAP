@@ -25,6 +25,9 @@ table "flywayapdev"."customers_customer" {
     column "Address" {
       type = varchar(200)
     }
+    column "ClientID" {
+      type = int
+    }
   )
   primaryKey = {
     columns = [

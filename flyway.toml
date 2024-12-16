@@ -8,8 +8,6 @@ mixed = true
 outOfOrder = true
 schemaModelLocation = "schema-model"
 validateMigrationNaming = true
-FLYWAY_USER = %MYSQL_USER% # These are examples of how to store usernames and passwords as environment variables
-FLYWAY_PASSWORD = %MYSQL_PASSWORD%
 
   [flyway.check]
   majorTolerance = 0
