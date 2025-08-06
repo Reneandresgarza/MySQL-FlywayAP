@@ -49,7 +49,7 @@ displayName = "Shadow database"
 url = "jdbc:mysql://localhost:3306"
 schemas = [ "flywayapcheck" ]
 displayName = "Check database"
-cleanDisabled = "false"
+provisioner = "clean"
 
 [environments.build]
 url = "jdbc:mysql://localhost:3306"
