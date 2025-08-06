@@ -55,3 +55,4 @@ provisioner = "clean"
 url = "jdbc:mysql://localhost:3306"
 schemas = [ "flywayapbuild" ]
 displayName = "Build database"
+provisioner = "clean"
