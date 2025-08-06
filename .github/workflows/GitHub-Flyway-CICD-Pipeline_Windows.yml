@@ -60,19 +60,19 @@ env:
 
 jobs:
   build:
-    name: Deploy Build
+    name: Deploy build
     # The type of runner that the job will run on
     runs-on: "self-hosted" # Options - self-hosted/ubuntu-latest/windows-latest (See here for more details on GitHub hosted runners - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners)
     environment: 'build'
     env:
-      stage: 'Build'
-      displayName: 'Build'
-      DATABASE_NAME: 'AutoPilotBuild'
-      ENVIRONMENT: 'Build' # This variable refers to the environment name present in the Flyway Projects TOML file. 
+      stage: 'build'
+      displayName: 'build'
+      DATABASE_NAME: 'AutoPilotbuild'
+      ENVIRONMENT: 'build' # This variable refers to the environment name present in the Flyway Projects TOML file. 
       TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}"
       TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}"
       CUSTOM_PARAMS: "${{ secrets.CUSTOM_PARAMS }}" # Secure method of adding custom Flyway Parameters (Example -X for debug)
-      EXECUTE_BUILD: 'true' # Turn to false to skip the build stage tasks
+      EXECUTE_build: 'true' # Turn to false to skip the build stage tasks
       publishArtifacts: 'true' # Turn to false to skip the artifact upload
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -94,22 +94,22 @@ jobs:
           }
       # Step 1 - Flyway License Authentication #
       - name: Flyway Authentication
-        if: ${{ env.EXECUTE_BUILD == 'true' && env.FLYWAY_AUTH_DISABLED != 'true' && success() }}
+        if: ${{ env.EXECUTE_build == 'true' && env.FLYWAY_AUTH_DISABLED != 'true' && success() }}
         run: |
          flyway auth -IAgreeToTheEula -email="${{ env.FLYWAY_EMAIL }}" -token="${{ env.FLYWAY_TOKEN }}"
-      # Step 2 - Ensure the Build Database is cleaned of all objects, meaning the build starts from scratch
-      - name: Clean Build DB
-        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+      # Step 2 - Ensure the build Database is cleaned of all objects, meaning the build starts from scratch
+      - name: Clean build DB
+        if: ${{ env.EXECUTE_build == 'true' && success() }}
         run: |
           flyway info clean info -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" -cleanDisabled='false' "-environments.${{ env.ENVIRONMENT }}.provisioner=clean" ${{ env.CUSTOM_PARAMS }}
       # Step 3 - Migrate all scripts from the migration folder, to verify they can be deployed against an empty database. This is the quickest way to get feedback about problematic scripts
-      - name: Migrate Build DB
-        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+      - name: Migrate build DB
+        if: ${{ env.EXECUTE_build == 'true' && success() }}
         run: |
           flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" -cleanDisabled='false' -baselineOnMigrate="true" "-publishResult=${{ env.FLYWAY_PUBLISH_RESULT }}" "-flywayServicePublish.publishReport=${{ env.FLYWAY_PUBLISH_RESULT }}" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }}
       # Step 4 (Optional) - Undo all relevant migrations using corresponding rollback script, to validate they can be run. This helps to reduce the chance the script will fail during a real life rollback scenario 
-      - name: undo Build DB
-        if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
+      - name: undo build DB
+        if: ${{ env.EXECUTE_build == 'true' && success() }}
         run: |
           flyway info undo info -environment="${{ env.ENVIRONMENT }}" -user=${{ env.TARGET_DATABASE_USERNAME }} -password=${{ env.TARGET_DATABASE_PASSWORD }} -configFiles="${{ GITHUB.WORKSPACE }}\flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}\migrations" -baselineOnMigrate="true" -cleanDisabled='false' -target="${{ env.FIRST_UNDO_SCRIPT }}" ${{ env.CUSTOM_PARAMS }}
       # GitHub - After migration scripts are validated, publish them as an artifact
