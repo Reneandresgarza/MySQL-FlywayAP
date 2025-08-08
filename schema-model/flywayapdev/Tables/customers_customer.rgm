@@ -31,6 +31,9 @@ table "flywayapdev"."customers_customer" {
     column "socialmedia2" {
       type = varchar(100)
     }
+    column "SocialSecurity" {
+      type = varchar(100)
+    }
   )
   primaryKey = {
     columns = [
